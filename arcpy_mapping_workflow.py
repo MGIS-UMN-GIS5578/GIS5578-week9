@@ -2,7 +2,7 @@
 """
 Spyder Editor
 
-This is a temporary script file.
+This script provides automated visualizations.
 """
 
 import arcpy
@@ -16,7 +16,7 @@ def LoadDataFromDirectory(theDirectory, theMap ):
     
     mapLayers = []    
     for shp in arcpy.ListFeatureClasses():
-        shpFilePath = r"%s\%s" % (theDirectory, shp)
+        shpFilePath = os.path.join(theDirectory, shp)
         mapLayers.append(theMap.addDataFromFile(shpFilePath))
         
     return mapLayers
@@ -56,6 +56,9 @@ def ChangeLayerAttribute(theLayer, theFieldName):
         print("Not a Valid field Name for layer %s" % (theLayer.name))
         print(list(myFields.keys()))
 
+
+#### ----------------------------------- MAIN -------------------------------
+
 arcPRJFilePath = r"C:\work\week9"
 
 arpxFilePaths = []
@@ -67,26 +70,26 @@ for root, dirs, files in os.walk(arcPRJFilePath):
 arpxFilePaths = [r"%s\%s" % (root,f) for root, dirs, files in os.walk(arcPRJFilePath) for f in files if 'aprx' in f ]
 
 #for arcPRJPath in arpxFilePaths:
-    
 arcPRJ = arcpy.mp.ArcGISProject(arpxFilePaths[0])
+#arcPRJ = arcpy.mp.ArcGISProject("CURRENT")
 maps = arcPRJ.listMaps()
 myMap = maps[0]
 
 myDatasetPath = r"%s\%s" % (arcPRJFilePath, features[0])
 
-
+layers = myMap.listLayers()
+myLayer = layers[0]
 myLayer.visible = True
 sym = myLayer.symbology
 
 
+allFields = [f.name for f in arcpy.ListFields(layer)]
+myFields = {f.name: f.type for f in arcpy.ListFields(myLayer.name) }
+
 sym.updateRenderer('GraduatedColorsRenderer')
 sym.renderer.breakCount = 6
+sym.renderer.classificationField = 'Total_Popu'
 myLayer.symbology = sym
-sym.renderer.classificationField
-'OBJECTID_1'
-
-myFields {f.name: f.type for f in arcpy.ListFields(myLayer.name) }
-
 
 
 #this return a single ramp object
